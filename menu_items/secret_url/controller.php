@@ -10,7 +10,7 @@ class Controller extends \Concrete\Core\Application\UserInterface\Menu\Item\Cont
     public function displayItem()
     {
         $c = Page::getCurrentPage();
-        if (is_object($c) && !$c->isSystemPage()) {
+        if (is_object($c) && !$c->isAdminArea() && !$c->isAliasPageOrExternalLink() && !$c->isInTrash() && !$c->isMasterCollection()) {
             $cp = new Checker($c);
             if ($cp->canApprovePageVersions()) {
                 /** @var ResolverManagerInterface $resolver */

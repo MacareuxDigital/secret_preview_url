@@ -17,12 +17,14 @@ use Concrete\Core\Http\ResponseFactoryInterface;
 use Concrete\Core\Localization\Service\Date;
 use Concrete\Core\Package\PackageService;
 use Concrete\Core\Page\Page;
+use Concrete\Core\Site\Config\Liaison;
 use Concrete\Core\Url\Resolver\Manager\ResolverManagerInterface;
 use Concrete\Core\User\UserInfoRepository;
 use Concrete\Core\Utility\Service\Identifier;
 use Concrete\Core\Validation\CSRF\Token;
 use Concrete5cojp\SecretUrl\Entity\Signature;
 use Concrete5cojp\SecretUrl\Entity\SignatureRepository;
+use Concrete5cojp\SecretUrl\Service\Dashboard;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
@@ -168,12 +170,15 @@ class SecretUrl extends Controller
 
     public function preview_page($signature)
     {
-        Cache::disableAll();
-
         $signatureEntity = $this->validateSignature($signature);
         if (is_object($signatureEntity)) {
+
+            Cache::disableAll();
+
             $c = Page::getByID($signatureEntity->getCollectionID());
             if (is_object($c) && !$c->isError()) {
+                $c->forceCheckIn();
+
                 $request = Request::getInstance();
                 $request->setCurrentPage($c);
 
@@ -230,5 +235,19 @@ class SecretUrl extends Controller
         }
 
         return false;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function on_start()
+    {
+        // Hacky way to disable toolbar
+        $this->app->singleton('helper/concrete/dashboard', Dashboard::class);
+        $site = $this->app->make('site')->getSite();
+        /** @var Liaison $config */
+        $config = $site->getConfigRepository();
+        $config->set('seo.tracking.code.header', '<style>div.ccm-page {padding-top: 0px !important;}</style>');
+        $config->set('seo.tracking.code.footer', '');
     }
 }
