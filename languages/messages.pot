@@ -1,0 +1,146 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: secret_preview_url 0.0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2019-07-23T12:18:06+09:00\n"
+"PO-Revision-Date: 2019-07-23T12:18:06+09:00\n"
+"Language: en_US\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+
+#: packages/secret_preview_url/config/singlepages.xml:6
+msgid "Secret Preview"
+msgstr ""
+
+#: packages/secret_preview_url/config/singlepages.xml:9
+msgid "URL List"
+msgstr ""
+
+#: packages/secret_preview_url/config/singlepages.xml:12
+msgid "Options"
+msgstr ""
+
+#: packages/secret_preview_url/controller.php:20
+#: packages/secret_preview_url/controller.php:41
+#: packages/secret_preview_url/controller.php:48
+msgid "Secret Preview URL"
+msgstr ""
+
+#: packages/secret_preview_url/controller.php:25
+msgid "Get the link for sharing unpublished pages."
+msgstr ""
+
+#: packages/secret_preview_url/single_pages/dashboard/secret_preview_url/config.php:7
+msgid "URL Settings"
+msgstr ""
+
+#: packages/secret_preview_url/single_pages/dashboard/secret_preview_url/config.php:9
+msgid "Expiration Lifetime"
+msgstr ""
+
+#: packages/secret_preview_url/single_pages/dashboard/secret_preview_url/config.php:12
+msgid "Minutes"
+msgstr ""
+
+#: packages/secret_preview_url/single_pages/dashboard/secret_preview_url/config.php:18
+msgid "Save"
+msgstr ""
+
+#: packages/secret_preview_url/single_pages/dashboard/secret_preview_url/url_list.php:23
+msgid "Page Name"
+msgstr ""
+
+#: packages/secret_preview_url/single_pages/dashboard/secret_preview_url/url_list.php:26
+#: packages/secret_preview_url/views/dialogs/secret_preview_url.php:60
+msgid "Expiration Date"
+msgstr ""
+
+#: packages/secret_preview_url/single_pages/dashboard/secret_preview_url/url_list.php:29
+#: packages/secret_preview_url/views/dialogs/secret_preview_url.php:43
+msgid "Preview As"
+msgstr ""
+
+#: packages/secret_preview_url/single_pages/dashboard/secret_preview_url/url_list.php:30
+#: packages/secret_preview_url/views/dialogs/secret_preview_url.php:47
+msgid "Preview At"
+msgstr ""
+
+#: packages/secret_preview_url/single_pages/dashboard/secret_preview_url/url_list.php:31
+#: packages/secret_preview_url/views/dialogs/secret_preview_url.php:61
+msgid "Action"
+msgstr ""
+
+#: packages/secret_preview_url/single_pages/dashboard/secret_preview_url/url_list.php:40
+#: packages/secret_preview_url/single_pages/dashboard/secret_preview_url/url_list.php:43
+msgid "Not Found"
+msgstr ""
+
+#: packages/secret_preview_url/single_pages/dashboard/secret_preview_url/url_list.php:45
+#: packages/secret_preview_url/single_pages/dashboard/secret_preview_url/url_list.php:47
+msgid "No Date"
+msgstr ""
+
+#: packages/secret_preview_url/single_pages/dashboard/secret_preview_url/url_list.php:60
+#: packages/secret_preview_url/views/dialogs/secret_preview_url.php:97
+msgid "Delete"
+msgstr ""
+
+#: packages/secret_preview_url/single_pages/dashboard/secret_preview_url/url_list.php:96
+#: packages/secret_preview_url/views/dialogs/secret_preview_url.php:134
+#: packages/secret_preview_url/views/dialogs/secret_preview_url.php:154
+msgid "Error"
+msgstr ""
+
+#: packages/secret_preview_url/single_pages/dashboard/secret_preview_url/url_list.php:104
+msgid "No URL found."
+msgstr ""
+
+#: packages/secret_preview_url/controllers/single_page/dashboard/secret_preview_url/config.php:31
+msgid "Settings saved."
+msgstr ""
+
+#: packages/secret_preview_url/controllers/secret_preview_url.php:131
+#: packages/secret_preview_url/views/dialogs/secret_preview_url.php:74
+msgid "Guest"
+msgstr ""
+
+#: packages/secret_preview_url/controllers/secret_preview_url.php:132
+#: packages/secret_preview_url/views/dialogs/secret_preview_url.php:80
+msgid "Current Time"
+msgstr ""
+
+#: packages/secret_preview_url/controllers/secret_preview_url.php:163
+msgid "Successfully deleted the secret url."
+msgstr ""
+
+#: packages/secret_preview_url/views/dialogs/secret_preview_url.php:50
+msgid "Add Preview URL"
+msgstr ""
+
+#: packages/secret_preview_url/views/dialogs/secret_preview_url.php:53
+msgid "Generated Preview URL"
+msgstr ""
+
+#: packages/secret_preview_url/views/dialogs/secret_preview_url.php:57
+msgid "Link"
+msgstr ""
+
+#: packages/secret_preview_url/views/dialogs/secret_preview_url.php:58
+msgid "User"
+msgstr ""
+
+#: packages/secret_preview_url/views/dialogs/secret_preview_url.php:59
+msgid "Preview Date"
+msgstr ""
+
+#: packages/secret_preview_url/views/dialogs/secret_preview_url.php:86
+msgid "No Expiration Date"
+msgstr ""
+
+#: packages/secret_preview_url/views/dialogs/secret_preview_url.php:124
+msgid "Success"
+msgstr ""
