@@ -1,10 +1,10 @@
 <?php
-namespace Concrete5cojp\SecretUrl\Service;
+namespace Concrete5cojp\SecretPreviewUrl\Service;
 
 class Dashboard extends \Concrete\Core\Application\Service\Dashboard
 {
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function canRead()
     {
@@ -12,7 +12,7 @@ class Dashboard extends \Concrete\Core\Application\Service\Dashboard
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function canAccessComposer()
     {
@@ -20,11 +20,10 @@ class Dashboard extends \Concrete\Core\Application\Service\Dashboard
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function inDashboard($pageOrPath = null)
     {
         return true;
     }
-
 }

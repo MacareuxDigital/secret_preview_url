@@ -1,5 +1,5 @@
 {
-  "name": "concrete5cojp/secret_url",
+  "name": "concrete5cojp/secret_preview_url",
   "description": "Get the link for sharing unpublished pages.",
   "type": "concrete5-package",
   "license": "MIT",

@@ -1,6 +1,5 @@
 <?php
-
-namespace Concrete5cojp\SecretUrl\Entity;
+namespace Concrete5cojp\SecretPreviewUrl\Entity;
 
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
@@ -8,7 +7,7 @@ use Doctrine\ORM\Mapping\Index;
 
 /**
  * @ORM\Entity(repositoryClass="SignatureRepository")
- * @ORM\Table(name="SecretUrlSignature", indexes={@Index(name="search_idx", columns={"signatureString"})})
+ * @ORM\Table(name="SecretPreviewUrlSignature", indexes={@Index(name="search_idx", columns={"signatureString"})})
  */
 class Signature
 {

@@ -1,4 +1,4 @@
-# Preview URL
+# Secret Preview URL
 
 A concrete5 add-on to get the link for sharing unpublished pages.
 

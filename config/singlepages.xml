@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
 <concrete5-cif version="1.0">
     <singlepages>
-        <page name="Preview URL" path="/dashboard/secret_url"
-              filename="/dashboard/secret_url/view.php" pagetype="" description=""
-              package="secret_url"></page>
-        <page name="List" path="/dashboard/secret_url/url_list"
-              filename="/dashboard/secret_url/url_list.php" pagetype="" description=""
-              package="secret_url"></page>
-        <page name="Config" path="/dashboard/secret_url/config"
-              filename="/dashboard/secret_url/config.php" pagetype="" description=""
-              package="secret_url"></page>
+        <page name="Secret Preview" path="/dashboard/secret_preview_url"
+              filename="/dashboard/secret_preview_url/view.php" pagetype="" description=""
+              package="secret_preview_url"></page>
+        <page name="URL List" path="/dashboard/secret_preview_url/url_list"
+              filename="/dashboard/secret_preview_url/url_list.php" pagetype="" description=""
+              package="secret_preview_url"></page>
+        <page name="Options" path="/dashboard/secret_preview_url/config"
+              filename="/dashboard/secret_preview_url/config.php" pagetype="" description=""
+              package="secret_preview_url"></page>
     </singlepages>
 </concrete5-cif>
