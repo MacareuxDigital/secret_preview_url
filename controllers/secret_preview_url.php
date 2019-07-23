@@ -19,6 +19,7 @@ use Concrete\Core\Package\PackageService;
 use Concrete\Core\Page\Page;
 use Concrete\Core\Site\Config\Liaison;
 use Concrete\Core\Url\Resolver\Manager\ResolverManagerInterface;
+use Concrete\Core\User\User;
 use Concrete\Core\User\UserInfoRepository;
 use Concrete\Core\Utility\Service\Identifier;
 use Concrete\Core\Validation\CSRF\Token;
@@ -46,6 +47,11 @@ class SecretPreviewUrl extends Controller
         /** @var UserSelector $userSelector */
         $userSelector = $this->app->make('helper/form/user_selector');
         $this->set('userSelector', $userSelector);
+
+        /** @var User $u */
+        $u = $this->app->make(User::class);
+        $uID = (is_object($u)) ? $u->getUserID() : false;
+        $this->set('uID', $uID);
 
         /** @var DateTime $dateTime */
         $dateTime = $this->app->make('helper/form/date_time');

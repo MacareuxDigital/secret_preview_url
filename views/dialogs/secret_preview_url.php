@@ -16,6 +16,7 @@ use Concrete5cojp\SecretPreviewUrl\Entity\Signature;
 /* @var AssetGroup $selectize */
 /* @var Form $form */
 /* @var UserSelector $userSelector */
+/* @var int $uID */
 /* @var DateTimeWidget $dateTime */
 /* @var Token $token */
 /* @var Date $dh */
@@ -41,7 +42,7 @@ use Concrete5cojp\SecretPreviewUrl\Entity\Signature;
         <?= $token->output('add'); ?>
         <div class="form-group">
             <?= $form->label('uID', t('Preview As')); ?>
-            <?= $userSelector->quickSelect('uID'); ?>
+            <?= $userSelector->quickSelect('uID', $uID); ?>
         </div>
         <div class="form-group">
             <?= $form->label('preview_date', t('Preview At')); ?>
