@@ -208,6 +208,8 @@ class SecretPreviewUrl extends Controller
                 $controller = $c->getPageController();
                 $view = $controller->getViewObject();
 
+                $view->addHeaderAsset('<meta name="robots" content="noindex, nofollow">');
+
                 $response = new Response();
                 $response->setContent($view->render());
 
