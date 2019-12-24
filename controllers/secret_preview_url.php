@@ -184,12 +184,12 @@ class SecretPreviewUrl extends Controller
             $config->set('concrete.cache.blocks', false);
             $config->set('concrete.cache.pages', false);
 
-            $c = Page::getByID($signatureEntity->getCollectionID());
+            $c = Page::getByID($signatureEntity->getCollectionID(), 'RECENT');
             if (is_object($c) && !$c->isError()) {
                 if ($c->isCheckedOut()) {
                     $c->forceCheckIn();
                     // Reload
-                    $c = Page::getByID($c->getCollectionID());
+                    $c = Page::getByID($c->getCollectionID(), 'RECENT');
                 }
 
                 $request = Request::getInstance();
