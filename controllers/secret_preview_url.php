@@ -179,7 +179,10 @@ class SecretPreviewUrl extends Controller
         $signatureEntity = $this->validateSignature($signature);
         if (is_object($signatureEntity)) {
 
-            Cache::disableAll();
+            /** @var \Concrete\Core\Config\Repository\Liaison $config */
+            $config = $this->app->make('config');
+            $config->set('concrete.cache.blocks', false);
+            $config->set('concrete.cache.pages', false);
 
             $c = Page::getByID($signatureEntity->getCollectionID());
             if (is_object($c) && !$c->isError()) {
