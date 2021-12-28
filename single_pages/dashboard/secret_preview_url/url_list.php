@@ -69,7 +69,7 @@ if (is_object($pagination)) {
                 </div>
                 <?php if (is_object($pagination)) { ?>
                     <div class="ccm-search-results-pagination">
-                        <?= $pagination->renderDefaultView(); ?>
+                        <?= $pagination->renderView('dashboard'); ?>
                     </div>
                 <?php } ?>
             </div>

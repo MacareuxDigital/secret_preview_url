@@ -3,8 +3,5 @@
   "description": "Get the link for sharing unpublished pages.",
   "type": "concrete5-package",
   "license": "MIT",
-  "minimum-stability": "stable",
-  "require": {
-    "concrete5/core": "^8.5"
-  }
+  "minimum-stability": "stable"
 }

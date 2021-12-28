@@ -35,10 +35,13 @@ class SecretPreviewUrl extends Controller
 
     public function dialog($cID)
     {
-        $al = AssetList::getInstance();
-        /** @var AssetGroup $selectize */
-        $selectize = $al->getAssetGroup('selectize');
-        $this->set('selectize', $selectize);
+        $installedVersion = $this->app->make('config')->get('concrete.version_installed');
+        if (version_compare($installedVersion, '9.0.0', '<')) {
+            $al = AssetList::getInstance();
+            /** @var AssetGroup $selectize */
+            $selectize = $al->getAssetGroup('selectize');
+            $this->set('selectize', $selectize);
+        }
 
         /** @var Form $form */
         $form = $this->app->make('helper/form');

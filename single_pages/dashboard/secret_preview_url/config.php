@@ -9,7 +9,7 @@
             <?= $form->label('lifetime', t('Expiration Lifetime')); ?>
             <div class="input-group">
                 <?= $form->number('lifetime', $lifetime); ?>
-                <div class="input-group-addon"><?= t('Minutes'); ?></div>
+                <div class="input-group-addon input-group-text"><?= t('Minutes'); ?></div>
             </div>
         </div>
     </fieldset>

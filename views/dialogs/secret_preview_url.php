@@ -24,6 +24,7 @@ use Concrete5cojp\SecretPreviewUrl\Entity\Signature;
 /* @var UserInfoRepository $userInfoRepository */
 /* @var array $signatures */
 
+if (isset($selectize)) {
 ?>
 <script>
     <?php
@@ -37,6 +38,7 @@ use Concrete5cojp\SecretPreviewUrl\Entity\Signature;
     }
     ?>
 </script>
+<?php } ?>
 <div class="ccm-ui">
     <form action="<?= h($view->action('add')); ?>" method="post" id="ccm-secret-url-dialog">
         <?= $token->output('add'); ?>
@@ -87,7 +89,11 @@ use Concrete5cojp\SecretPreviewUrl\Entity\Signature;
                 $expirationDate = t('No Expiration Date');
             } ?>
             <tr>
-                <td><a href="<?= h($viewUrl); ?>" target="_blank"><i class="fa fa-external-link" aria-hidden="true"></i></a>
+                <td>
+                    <a href="<?= h($viewUrl); ?>" target="_blank">
+                        <i class="fa fa-external-link" aria-hidden="true"></i>
+                        <i class="fas fa-external-link-alt"></i>
+                    </a>
                 </td>
                 <td><?= h($user); ?></td>
                 <td><?= h($previewDate); ?></td>
@@ -118,7 +124,7 @@ use Concrete5cojp\SecretPreviewUrl\Entity\Signature;
                 jQuery.fn.dialog.hideLoader();
                 if (r.url) {
                     $('#ccm-secret-url-table tbody').append('<tr>' +
-                        '<td><a href="' + r.url + '" target="_blank"><i class="fa fa-external-link" aria-hidden="true"></i></a></td>' +
+                        '<td><a href="' + r.url + '" target="_blank"><i class="fa fa-external-link" aria-hidden="true"></i><i class="fas fa-external-link-alt"></i></a></td>' +
                         '<td>' + r.user + '</td>' +
                         '<td>' + r.preview + '</td>' +
                         '<td>' + r.expiration + '</td>' +
