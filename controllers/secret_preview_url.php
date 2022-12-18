@@ -16,6 +16,7 @@ use Concrete\Core\Http\Response;
 use Concrete\Core\Http\ResponseFactoryInterface;
 use Concrete\Core\Localization\Service\Date;
 use Concrete\Core\Package\PackageService;
+use Concrete\Core\Page\Event;
 use Concrete\Core\Page\Page;
 use Concrete\Core\Site\Config\Liaison;
 use Concrete\Core\Url\Resolver\Manager\ResolverManagerInterface;
@@ -210,6 +211,11 @@ class SecretPreviewUrl extends Controller
                 if (is_object($previewDate)) {
                     $request->setCustomRequestDateTime($previewDate->format('Y-m-d H:i:s'));
                 }
+
+                $pe = new Event($c);
+                $pe->setUser($this->app->make(User::class));
+                $pe->setRequest($request);
+                $this->app['director']->dispatch('on_page_view', $pe);
 
                 $controller = $c->getPageController();
                 $view = $controller->getViewObject();
