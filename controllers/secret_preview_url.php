@@ -202,7 +202,13 @@ class SecretPreviewUrl extends Controller
                 /** @var UserInfoRepository $repository */
                 $repository = $this->app->make(UserInfoRepository::class);
                 $ui = $repository->getByID($signatureEntity->getUserID());
-                if (!is_object($ui)) {
+                if ($ui) {
+                    // We need rebinding User singleton
+                    // @see https://github.com/concretecms/concretecms/pull/9033
+                    $this->app->singleton(User::class, function () use ($ui) {
+                        return $ui->getUserObject();
+                    });
+                } else {
                     $ui = -1;
                 }
                 $request->setCustomRequestUser($ui);

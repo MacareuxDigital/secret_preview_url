@@ -10,7 +10,7 @@ class Controller extends Package
 {
     protected $appVersionRequired = '8.5.0';
     protected $pkgHandle = 'secret_preview_url';
-    protected $pkgVersion = '0.0.1';
+    protected $pkgVersion = '0.9.0';
     protected $pkgAutoloaderRegistries = [
         'src' => '\Concrete5cojp\SecretPreviewUrl',
     ];
