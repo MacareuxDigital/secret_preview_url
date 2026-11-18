@@ -18,11 +18,13 @@ use Concrete\Core\Localization\Service\Date;
 use Concrete\Core\Package\PackageService;
 use Concrete\Core\Page\Event;
 use Concrete\Core\Page\Page;
+use Concrete\Core\Permission\Checker;
 use Concrete\Core\Site\Config\Liaison;
 use Concrete\Core\Url\Resolver\Manager\ResolverManagerInterface;
 use Concrete\Core\User\User;
 use Concrete\Core\User\UserInfoRepository;
 use Concrete\Core\Utility\Service\Identifier;
+use Concrete\Core\Utility\Service\Validation\Numbers;
 use Concrete\Core\Validation\CSRF\Token;
 use Concrete5cojp\SecretPreviewUrl\Entity\Signature;
 use Concrete5cojp\SecretPreviewUrl\Entity\SignatureRepository;
@@ -34,8 +36,15 @@ class SecretPreviewUrl extends Controller
 {
     protected $viewPath = '/dialogs/secret_preview_url';
 
+    protected $previewUserDenied = false;
+
     public function dialog($cID)
     {
+        $page = $this->getAuthorizedPage($cID);
+        if (!$page instanceof Page) {
+            return $page;
+        }
+
         $installedVersion = $this->app->make('config')->get('concrete.version_installed');
         if (version_compare($installedVersion, '9.0.0', '<')) {
             $al = AssetList::getInstance();
@@ -82,29 +91,41 @@ class SecretPreviewUrl extends Controller
         /** @var SignatureRepository $repository */
         $repository = $em->getRepository(Signature::class);
         $signatures = $repository->findBy([
-            'cID' => $cID
+            'cID' => (int) $page->getCollectionID(),
         ]);
         $this->set('signatures', $signatures);
     }
 
     public function add($cID)
     {
+        $page = $this->getAuthorizedPage($cID);
+        if (!$page instanceof Page) {
+            return $page;
+        }
+
         /** @var Token $token */
         $token = $this->app->make('token');
         /** @var Date $dh */
         $dh = $this->app->make('helper/date');
         /** @var ErrorList $error */
         $error = $this->app->make('error');
+        $failureStatus = Response::HTTP_BAD_REQUEST;
         if (!$token->validate('add')) {
             $error->add($token->getErrorMessage());
         }
 
-        /** @var UserInfoRepository $repository */
-        $repository = $this->app->make(UserInfoRepository::class);
-        $ui = $repository->getByID($this->post('uID'));
+        $ui = null;
+        if (!$error->has()) {
+            $resolved = $this->resolvePreviewUser($this->post('uID'), $error);
+            if ($resolved === false) {
+                $failureStatus = $this->previewUserDenied ? Response::HTTP_FORBIDDEN : Response::HTTP_BAD_REQUEST;
+            } else {
+                $ui = $resolved;
+            }
+        }
         /** @var DateTime $dt */
         $dt = $this->app->make('helper/form/date_time');
-        $previewDate = $dt->translate('preview_date', $this->post(), true);
+        $previewDate = (!$error->has()) ? $dt->translate('preview_date', $this->post(), true) : null;
 
         if (!$error->has()) {
             /** @var Identifier $identifier */
@@ -118,7 +139,7 @@ class SecretPreviewUrl extends Controller
             $expiration = Carbon::now()->addMinutes($lifetime);
 
             $signature = new Signature();
-            $signature->setCollectionID($cID);
+            $signature->setCollectionID((int) $page->getCollectionID());
             if (is_object($ui)) {
                 $signature->setUserID($ui->getUserID());
             }
@@ -143,39 +164,48 @@ class SecretPreviewUrl extends Controller
             $response->expiration = $dh->formatDateTime($expiration, true, true);
 
             return new JsonResponse($response);
-        } else {
-            return $error->createResponse();
         }
+
+        return $error->createResponse($failureStatus);
     }
 
     public function delete($signature)
     {
+        $user = $this->app->make(User::class);
+        if (!is_object($user) || !$user->isRegistered()) {
+            return $this->accessDenied();
+        }
+        if (!is_string($signature) || preg_match('/\A[a-f0-9]{64}\z/', $signature) !== 1) {
+            return $this->invalidRequest(t('Invalid preview link.'));
+        }
+
+        /** @var EntityManagerInterface $em */
+        $em = $this->app->make(EntityManagerInterface::class);
+        /** @var SignatureRepository $repository */
+        $repository = $em->getRepository(Signature::class);
+        $signatureEntity = $repository->findOneBySignature($signature);
+        if (!is_object($signatureEntity)) {
+            return $this->invalidRequest(t('Invalid preview link.'));
+        }
+
+        $page = $this->getAuthorizedPage($signatureEntity->getCollectionID());
+        if (!$page instanceof Page) {
+            return $page;
+        }
+
         /** @var Token $token */
         $token = $this->app->make('token');
-        /** @var ErrorList $error */
-        $error = $this->app->make('error');
         if (!$token->validate('delete')) {
-            $error->add($token->getErrorMessage());
+            return $this->invalidRequest($token->getErrorMessage());
         }
 
-        if (!$error->has()) {
-            /** @var EntityManagerInterface $em */
-            $em = $this->app->make(EntityManagerInterface::class);
-            /** @var SignatureRepository $repository */
-            $repository = $em->getRepository(Signature::class);
-            $signatureEntity = $repository->findOneBySignature($signature);
-            if (is_object($signatureEntity)) {
-                $em->remove($signatureEntity);
-                $em->flush();
-            }
+        $em->remove($signatureEntity);
+        $em->flush();
 
-            $response = new \stdClass();
-            $response->responseText = t('Successfully deleted the secret url.');
+        $response = new \stdClass();
+        $response->responseText = t('Successfully deleted the secret url.');
 
-            return new JsonResponse($response);
-        } else {
-            return $error->createResponse();
-        }
+        return new JsonResponse($response);
     }
 
     public function preview_page($signature)
@@ -243,11 +273,115 @@ class SecretPreviewUrl extends Controller
     }
 
     /**
+     * @param mixed $cID
+     *
+     * @return Page|JsonResponse
+     */
+    protected function getAuthorizedPage($cID)
+    {
+        $user = $this->app->make(User::class);
+        if (!is_object($user) || !$user->isRegistered()) {
+            return $this->accessDenied();
+        }
+        $actor = $this->app->make(UserInfoRepository::class)->getByID($user->getUserID());
+        if (!is_object($actor) || !$actor->isActive()) {
+            return $this->accessDenied();
+        }
+
+        /** @var Numbers $numbers */
+        $numbers = $this->app->make(Numbers::class);
+        if (!$numbers->integer($cID, 1)) {
+            return $this->invalidRequest(t('Invalid page.'));
+        }
+
+        $page = Page::getByID((int) $cID, 'RECENT');
+        if (!is_object($page) || $page->isError() || $page->isAdminArea() || $page->isInTrash() || $page->isAliasPageOrExternalLink() || $page->isMasterCollection()) {
+            return $this->invalidRequest(t('Invalid page.'));
+        }
+
+        $permissions = new Checker($page);
+        if (!$permissions->canPreviewPageAsUser() || !$permissions->canApprovePageVersions()) {
+            return $this->accessDenied();
+        }
+
+        return $page;
+    }
+
+    /**
+     * The posted user ID is who the page is previewed as, not who is allowed to create the link.
+     *
+     * @param mixed $postedUserId
+     * @param ErrorList $error
+     *
+     * @return \Concrete\Core\User\UserInfo|null|false false when the caller must stop
+     */
+    protected function resolvePreviewUser($postedUserId, ErrorList $error)
+    {
+        if ($postedUserId === null || $postedUserId === '' || $postedUserId === false || $postedUserId === 0 || $postedUserId === '0' || $postedUserId === 'null') {
+            return null;
+        }
+
+        /** @var Numbers $numbers */
+        $numbers = $this->app->make(Numbers::class);
+        if (!$numbers->integer($postedUserId, 1)) {
+            $error->add(t('Invalid user.'));
+
+            return false;
+        }
+
+        $ui = $this->app->make(UserInfoRepository::class)->getByID((int) $postedUserId);
+        if (!is_object($ui) || !$ui->isActive()) {
+            $error->add(t('Invalid user.'));
+
+            return false;
+        }
+        if ((int) $ui->getUserID() === (int) USER_SUPER_ID) {
+            $actor = $this->app->make(User::class);
+            if (!$actor->isSuperUser() && !(new Checker())->canSudo()) {
+                $this->previewUserDenied = true;
+                $error->add(t('Access Denied'));
+
+                return false;
+            }
+        }
+
+        return $ui;
+    }
+
+    /**
+     * @return JsonResponse
+     */
+    protected function accessDenied()
+    {
+        $error = $this->app->make('error');
+        $error->add(t('Access Denied'));
+
+        return $error->createResponse(Response::HTTP_FORBIDDEN);
+    }
+
+    /**
+     * @param string $message
+     *
+     * @return JsonResponse
+     */
+    protected function invalidRequest($message)
+    {
+        $error = $this->app->make('error');
+        $error->add($message);
+
+        return $error->createResponse(Response::HTTP_BAD_REQUEST);
+    }
+
+    /**
      * @param $signature
      * @return bool|Signature
      */
     protected function validateSignature($signature)
     {
+        if (!is_string($signature) || preg_match('/\A[a-f0-9]{64}\z/', $signature) !== 1) {
+            return false;
+        }
+
         /** @var EntityManagerInterface $em */
         $em = $this->app->make(EntityManagerInterface::class);
         /** @var SignatureRepository $signatureRepository */
