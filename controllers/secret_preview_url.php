@@ -123,6 +123,10 @@ class SecretPreviewUrl extends Controller
                 $ui = $resolved;
             }
         }
+        if (!$error->has() && is_object($ui) && !(new Checker($page))->canPreviewPageAsUser()) {
+            $error->add(t('Access Denied'));
+            $failureStatus = Response::HTTP_FORBIDDEN;
+        }
         /** @var DateTime $dt */
         $dt = $this->app->make('helper/form/date_time');
         $previewDate = (!$error->has()) ? $dt->translate('preview_date', $this->post(), true) : null;
@@ -175,6 +179,10 @@ class SecretPreviewUrl extends Controller
         if (!is_object($user) || !$user->isRegistered()) {
             return $this->accessDenied();
         }
+        $actor = $this->app->make(UserInfoRepository::class)->getByID($user->getUserID());
+        if (!is_object($actor) || !$actor->isActive()) {
+            return $this->accessDenied();
+        }
         if (!is_string($signature) || preg_match('/\A[a-f0-9]{64}\z/', $signature) !== 1) {
             return $this->invalidRequest(t('Invalid preview link.'));
         }
@@ -190,7 +198,12 @@ class SecretPreviewUrl extends Controller
 
         $page = $this->getAuthorizedPage($signatureEntity->getCollectionID());
         if (!$page instanceof Page) {
-            return $page;
+            $dashboard = Page::getByPath('/dashboard/secret_preview_url/url_list');
+            $canViewList = is_object($dashboard) && !$dashboard->isError() && (new Checker($dashboard))->canViewPage();
+            // 400 means the page is missing or not manageable. 403 keeps the normal page check.
+            if ($page->getStatusCode() !== Response::HTTP_BAD_REQUEST || !$canViewList) {
+                return $page;
+            }
         }
 
         /** @var Token $token */
@@ -300,7 +313,7 @@ class SecretPreviewUrl extends Controller
         }
 
         $permissions = new Checker($page);
-        if (!$permissions->canPreviewPageAsUser() || !$permissions->canApprovePageVersions()) {
+        if (!$permissions->canApprovePageVersions()) {
             return $this->accessDenied();
         }
 
